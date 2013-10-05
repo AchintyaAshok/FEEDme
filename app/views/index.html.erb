@@ -1,0 +1,40 @@
+<% content_for :title do %>Feed Me<% end %>
+
+<%= stylesheet_link_tag 'sample_index' %>
+
+	<!-- NAVBAR -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container container-nav">
+			<a class="btn btn-navbar" data-toggle="collapse" data-target="#main-links">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</a>
+			<a class="brand" href="#">Feed Me</a>
+		</div>
+	</div>
+</div>
+
+
+<div class='row' id='container-main'>
+	<!-- THIS IS WHERE THE EVENTS WILL GET POPULATED	-->
+</div>
+
+<div class='navbar navbar-inverse navbar-fixed-bottom' id='footer'>
+	<div class="navbar-inner">
+		<div class="container container-nav">
+			<a class="brand">
+				<small>&copy; Feed Me 2013</small>
+			</a>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	$(function() {
+		var router = new window.App.AppRouter();
+		Backbone.history.start();
+	});
+</script>
