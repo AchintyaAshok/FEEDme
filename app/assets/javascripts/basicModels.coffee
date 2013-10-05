@@ -28,10 +28,11 @@ jQuery ->
 			view = new TableView
 			@show_view(view)
 
-		select_items:(options) ->
+		menu_view:(options) ->
+			console.log('in select_items', options)
 			menuView = new MenuView
 				options: options
-			show_view(menuView)
+			@show_view(menuView)
 
 
 	class MainView extends Backbone.View
@@ -80,20 +81,59 @@ jQuery ->
 
 		initialize:(options) ->
 			console.log 'initializing menu view'
-			console.log 'loading with options->' options
+			console.log('loading with options->', options)
 
-			@myMenu = new Menu
-			@myMenu.fetch (ev)->
+			@model = new Menu
+			@model.fetch
 				async: false
-				success:
+				success:(ev) =>
 					console.log 'fetched menu!'
-				error:
+				error:(ev) =>
 					console.log 'unable to fetch menu'
 
-		render: ->
-			template = """
+		events:
+			'mouseover .list-group-item' : 'handle_mouseover'
 
+		render: ->
+			console.log('MenuView::render -> model', @model.toJSON())
+			template = """
+				<div class='panel panel-default'>
+					<% for(var i=0; i<data['menu']['sections'].length; i++) {
+						var element = data['menu']['sections'][i];
+					%>
+					<div class='panel-heading lead'><%= element['section_name'] %></div>
+					<ul class="list-group">
+						<% for(var j=0; j<element['subsections'][0]['contents'].length; j++){ 
+							var menuItem = element['subsections'][0]['contents'][j];
+						%>
+						<li class='list-group-item'><a><%= menuItem['name'] %></a></li>
+						<% } %>
+					</ul>
+					<br>
+					<% } %>
+				</div>
 			"""
+
+			stuff = """
+			<ul class="nav nav-pills">
+				<% for(var j=0; j<element['contents'].length; j++){ %>
+				<p>blah</p>
+				<% } %>
+			</ul>
+				<li><a><%= element['contents'][i]['name']</a></li>
+			"""
+
+			$(@el).append(_.template(template, @model.toJSON()))
+			return @
+
+		handle_mouseover:(ev) ->
+			$('.list-group-item').removeClass('active')
+			$(ev.currentTarget).addClass('active')
+			$(ev.currentTarget).on 'mouseleave', (ev)->
+				$(this).removeClass('active')
+
+		close: ->
+			@remove()
 
 
 	class Menu extends Backbone.Model
