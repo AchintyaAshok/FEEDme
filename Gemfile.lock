@@ -116,6 +116,7 @@ DEPENDENCIES
   httparty
   jbuilder (~> 1.2)
   jquery-rails
+  json
   rails (= 4.0.0)
   sass-rails (~> 4.0.0)
   sdoc
