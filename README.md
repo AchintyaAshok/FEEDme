@@ -1,9 +1,21 @@
-PLAN MY WEATHER
+RESTAURANT APP
 ===============
 
-1. Form for filling in the  city. Auto-complete using  Wunderground API. 
-2. Front-end?
-3. Back-end?
+# User workflow
+## Version 1.0
+ 1. User logs in.
+ 2. User selects a restaurant among the "nearby" restaurants that have
+menus on Locu.
+ 3. User either creates a new table or joins an existing table in the
+restaurant. Creating a new table will involve:
+ * Creating the name for the table.
+ * Selecting how many people you expect
+The table creator can remove any people that joined the table when they
+should not have.
+ 4. Each user can then see the menu
+## Version 2.0
+ 5. Users can select menu items and opt to pay for them
+ 6. Users can customize the location where they are looking for restaurants.
 
 # API Keys
 Web API key: c441cb7b1b3f83a2644a6bc573dd8ebf3e9a1afb
