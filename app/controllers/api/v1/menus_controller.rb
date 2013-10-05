@@ -8,11 +8,12 @@ class API::V1::MenusController < ActionController::Base
 		#Get venue from frontend
 		#Get menu for venue from Locu
 		#Send menu
+		menu_json = JSON.parse(menu.body)
 		if menu
 					render :status => 200,
 					:json => { :success => true,
 						:info => "",
-						:data => { :menu => menu } 
+						:data => { :menu => menu_json["menu"]["objects"] } 
 					} 
 		end
 	end
