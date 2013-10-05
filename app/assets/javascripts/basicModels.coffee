@@ -6,6 +6,7 @@ jQuery ->
 		routes:
 			'' : 'home'
 			'find_table' : 'table_view'
+			'select_items': 'menu_view'
 
 
 		# Basically a constructor for the AppRouter, this method retrieves the collection
@@ -26,6 +27,11 @@ jQuery ->
 			console.log 'in table view'
 			view = new TableView
 			@show_view(view)
+
+		select_items:(options) ->
+			menuView = new MenuView
+				options: options
+			show_view(menuView)
 
 
 	class MainView extends Backbone.View
@@ -64,6 +70,35 @@ jQuery ->
 			console.log 'TableView::closing()'
 			@remove()
 
+
+	# This view shows user the entire menu pertaining to the restaurant.
+	class MenuView extends Backbone.View
+
+		tagName: 'div'
+		className: 'container col-md-12'
+		idName: 'menu-view'
+
+		initialize:(options) ->
+			console.log 'initializing menu view'
+			console.log 'loading with options->' options
+
+			@myMenu = new Menu
+			@myMenu.fetch (ev)->
+				async: false
+				success:
+					console.log 'fetched menu!'
+				error:
+					console.log 'unable to fetch menu'
+
+		render: ->
+			template = """
+
+			"""
+
+
+	class Menu extends Backbone.Model
+
+		url: '/menu'
 
 
 	# Exports
