@@ -97,21 +97,29 @@ jQuery ->
 		render: ->
 			console.log('MenuView::render -> model', @model.toJSON())
 			template = """
+				<% for(var i=0; i<data['menu']['sections'].length; i++) { 
+					var element = data['menu']['sections'][i];
+				%>
 				<div class='panel panel-default'>
-					<% for(var i=0; i<data['menu']['sections'].length; i++) {
-						var element = data['menu']['sections'][i];
-					%>
-					<div class='panel-heading lead'><%= element['section_name'] %></div>
+					<div class='panel-heading clearfix'>
+						<h3 class='panel-title'><%= element['section_name'] %></h3>
+					</div>
 					<ul class="list-group">
 						<% for(var j=0; j<element['subsections'][0]['contents'].length; j++){ 
 							var menuItem = element['subsections'][0]['contents'][j];
 						%>
-						<li class='list-group-item'><a><%= menuItem['name'] %></a></li>
+						<% if (menuItem['type'] == 'SECTION_TEXT'){ %>
+						<div class=' well text-warning'><%= menuItem['text'] %></div>
+						<% } else{ %>
+						<li class='list-group-item'>
+							<a><%= menuItem['name'] %></a>
+							<p class='text-muted'><%= menuItem['description'] %></p>
+							<% } %>
+						</li>
 						<% } %>
 					</ul>
-					<br>
-					<% } %>
 				</div>
+				<% } %>
 			"""
 
 			stuff = """
