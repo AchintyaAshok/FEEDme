@@ -1,6 +1,13 @@
 RESTAURANT APP
 ===============
 
+ENDPOINTS
+=========
+**GET** */menus/:id*
+
+**GET** */venues/?name="seafood"*
+
+
 # User workflow
 ## Version 1.0
  1. User logs in.
