@@ -1,7 +1,6 @@
 Planmyweather::Application.routes.draw do
 
 
-  get "application/index"
   # get "application/home"
 
 
