@@ -3,8 +3,10 @@ Planmyweather::Application.routes.draw do
 
   # get "application/home"
 
-  get 'menu' => 'menus#index'
+
   get '/home/index'
+  get 'menus' => 'menus#index'
+  get 'venues' => 'venues#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
