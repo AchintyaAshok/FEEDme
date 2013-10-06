@@ -129,11 +129,10 @@ jQuery ->
 			console.log('serialized form', attributes)
 
 			options = {}
-			options.name = $('#restaurant-search-query').val()
-			console.log('options.name', options)
+			name = $('#restaurant-search-query').val()
 
 			results = new Venue
-				options: {'name':$('#restaurant-search-query').val()}
+				name: name
 			results.fetch
 				async: false
 				success:()=>
@@ -197,6 +196,7 @@ jQuery ->
 
 		modify_url:(name) ->
 			@url = @url + "?name=" + encodeURIComponent(name)
+			console.log('modifying venue url -> ', @url)
 			return @url
 
 
