@@ -17,5 +17,6 @@
 //= require bootstrap.min
 //= require underscore-min.js
 //= require backbone-min.js
+//= require authentication
 //= require basicModels
 //

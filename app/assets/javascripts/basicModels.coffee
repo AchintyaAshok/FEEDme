@@ -46,20 +46,42 @@ jQuery ->
 		initialize: ->
 			console.log 'initializing main view'
 
+		render: ->
+			template = """
+				<div class="jumbotron">
+					<h1>Welcome to Feed Me!</h1>
+					<p class="lead">Here, you can easily find your favorite restaurants, look up the menus, select your food and share the bill with friends!</p>
+					<p><a class="btn btn-lg btn-info" id='venmo-login-button'>Login with Venmo</a></p>
+				</div>
+			"""
+
+			$(@el).html(_.template(template))
+			return @
+
+		close: ->
+			@remove()
+
+
+	# this view primarily shows what all items have been ordered for the table. The user
+	# will be able to see item names, item prices, quantity and total price. 
+	# the cart will show up as a modal, where items are matched up with their price, etc.
+	# the user can then choose to play for a certain selection of items.
+	class CartView extends Backbone.View
+
 
 	# This view allows a user to pick between creating a new table at a restaurant or choosing to join existing tables.
 	# If the user chooses to create a new table, they are showing a menu of items available at the restaurant.
 	class TableView extends Backbone.View
 		
 		tagName: 'div'
-		className: 'table-view col-md-12 center'
+		className: 'table-view col-md-12'
 
 		initialize:(options) ->
 			console.log 'initializing menu view'
 
 		render: ->
 			template = """
-			<div class="col-md-12 page-header">
+			<div class="col-md-12 page-header center">
 				<div>
 					<h1>Food <small>we all want some.</small></h1>
 				</div>
@@ -76,17 +98,19 @@ jQuery ->
 			return @
 
 		load_table_options:(attributes) =>
+			@venueName = attributes.name
+			@venueID = attributes.id
 			@searchView.remove()
 			template = """
-				<div class="jumbotron" style='background-color:white;'>
+				<div class="jumbotron center" style='background-color:white;'>
 					<div class='row'>
 						<h2><%= name %></h2>
 					</div>
 					<div class='row'>
-						<p class='lead'>Create a new table OR Join friends at an existing table.</p>
+						<p class='lead help-text'>Create a new table OR Join friends at an existing table.</p>
 					</div>
-					<div class='col-md-6'><a class="btn btn-lg btn-success btn-block" id='create-table' href="#">Create Table</a></div>
-					<div class='col-md-6'><a class="btn btn-lg btn-primary btn-block" id='join-table' href="#">Join Table</a></div>
+					<div class='col-md-6 table-button'><a class="btn btn-lg btn-success btn-block" id='create-table'>Create Table</a></div>
+					<div class='col-md-6 table-button'><a class="btn btn-lg btn-primary btn-block" id='join-table'>Join Table</a></div>
 				</div>
 			"""
 			$(@el).append(_.template(template, attributes))
@@ -99,10 +123,44 @@ jQuery ->
 
 		create_new_table:(ev) =>
 			console.log 'create a new table'
-			
+			$('.help-text').fadeOut 'fast', ->
+				$(this).remove()
+			$('.table-button').each (index)->
+				$(this).fadeOut 'fast', (ev)->
+					$(this).remove()
+
+			template = """
+				<form role='form' id='restaurant-search-form'>
+					<div class='col-md-2 padding'></div>
+					<div class='form-group col-md-8'>
+						<input class="form-control input-lg" id='new-table-name' type="text" placeholder="Name your table. Eg. John's Table">
+						<button class='btn btn-success btn-lg btn-block' id='create-new-table' type='submit'>Submit</button>
+					</div>
+					<div class='col-md-2 padding'></div>
+				</form>
+			"""
+
+			$(@el).append(_.template(template))
+
+			$('#create-new-table').on 'click', =>
+				newTableName = $('#new-table-name').val()
+				console.log 'create the new table with name->', newTableName
+				$('form').remove()
+				@load_menu()
+
+
+			return @
+
 
 		join_table:(ev) =>
 			console.log 'joining a table'
+
+		load_menu: ->
+			@menu = new MenuView
+				id: @venueID
+			$(@el).append(@menu.render().el)
+			return @
+
 
 		close: ->
 			console.log 'TableView::closing()'
@@ -216,7 +274,6 @@ jQuery ->
 				$(this).removeClass('active')
 
 
-
 	class Venue extends Backbone.Model
 
 		url: '/venues'
@@ -276,7 +333,7 @@ jQuery ->
 								<p><%= menuItem['name'] %></p>
 								<p class='text-muted'><%= menuItem['description'] %></p>
 							</div>
-							<div class='col-md-2 pull-right'>
+							<div class='col-md-2' style='text-align:right;'>
 								<p><%= menuItem['price'] %></p>
 							</div>
 						<% } %>
