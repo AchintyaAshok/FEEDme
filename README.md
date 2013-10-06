@@ -36,6 +36,12 @@ ENDPOINTS
 ###Example
     curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST http://localhost:3000/tableitems -d "{\"table_item\":{\"table_id\":\"1\",\"item_name\":\"Long Star BBQ\",\"quantity\":\"1\",\"price\":\"5.95\"}}"
 
+## Update quantity for a tableitem
+**POST** /tableitems/quantity
+    {id: , quantity: }
+###Example
+    POST http://localhost:3000/tableitems/quantity -d "{\"id\":\"1\",\"quantity\":\"1\"}"
+
 
 
 # User workflow

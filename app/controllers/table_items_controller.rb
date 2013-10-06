@@ -23,7 +23,7 @@ class TableItemsController < ActionController::Base
 	end
 
 	def create
-		@table_item = TableItem.create!{params[:table_item]}
+		@table_item = TableItem.create!(table_item_params)
 		if @table_item.save
 			render :status => 200,
 			:json => { :success => true,
@@ -40,11 +40,32 @@ class TableItemsController < ActionController::Base
 		end
 	end
 
-	def update
-		#Update a sepecific item
+	def update_quantity
+		@table_item = TableItem.find(params[:id])
+		@table_item.quantity = params[:quantity]
+		if @table_item.save
+			render :status => 200,
+			:json => { :success => true,
+				:info => "",
+				:data => { :tables => @table_item
+				} 
+			} 
+		else
+			render :status => :unprocessable_entity,
+			:json => { :success => false,
+				:info => "Not created",
+				:data => {:errors => @table_item.errors} 
+			}
+		end
 	end
 
 	def delete
-		#Delete an item
+
+	end
+
+	private
+
+	def table_item_params
+		params.require(:table_item).permit(:table_id, :item_name, :quantity, :price)
 	end
 end

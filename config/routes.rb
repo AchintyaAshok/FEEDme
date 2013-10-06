@@ -16,6 +16,7 @@ Planmyweather::Application.routes.draw do
 
   get 'tableitems/:table_id' => 'table_items#index'
   post 'tableitems' => 'table_items#create'
+  post 'tableitems/quantity' => 'table_items#update_quantity'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
