@@ -59,8 +59,21 @@ class TableItemsController < ActionController::Base
 		end
 	end
 
-	def delete
-
+	def destroy
+		@table_item = TableItem.find(params[:id])
+		if @table_item.destroy
+			render :status => 200,
+			:json => { :success => true,
+				:info => "Item deleted",
+				:data => {} 
+			} 
+		else
+			render :status => :unprocessable_entity,
+			:json => { :success => false,
+				:info => "Cannot delete",
+				:data => {:errors => @table_item.errors} 
+			}
+		end
 	end
 
 	private

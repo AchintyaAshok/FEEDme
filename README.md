@@ -42,7 +42,12 @@ ENDPOINTS
 ###Example
     POST http://localhost:3000/tableitems/quantity -d "{\"id\":\"1\",\"quantity\":\"1\"}"
 
+## Delete an app
+**DELETE** /tableitems/:id
 
+###Example
+    curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X DELETE http://localhost:3000/tableitems/1
+    
 
 # User workflow
 ## Version 1.0
