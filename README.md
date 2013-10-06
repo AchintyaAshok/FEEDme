@@ -11,11 +11,16 @@ ENDPOINTS
 ### Show all tables for a venue
 
 **POST** */tables/*
-{"venue_locu_id" : "821y38912", "name" : "User1's table" }
+{"venue_locu_id" : "821y38912", "name" : "User1's table", "user_id" : "1" }
 ### Create a new table
+## Example
+    curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST http://localhost:3000/tables -d "{\"venue_locu_id\":\"b307b08674481c3cef22\",\"name\":\"user1_s table\",\"user_id\":\"1\"}"
 
-**POST** */tables/:id/user*
+**POST** */tables/:id/users*
 {"user_id" : "1	"}
+### Example
+    curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST http://localhost:3000/tables/3/users -d "{\"user_id\":\"2\"}"
+
 ### Add a user to a table
 
 # User workflow
