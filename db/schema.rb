@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131006053825) do
+ActiveRecord::Schema.define(version: 20131006075324) do
 
   create_table "restaurant_table_users", force: true do |t|
     t.integer  "user_id"
@@ -30,6 +30,9 @@ ActiveRecord::Schema.define(version: 20131006053825) do
     t.datetime "updated_at"
   end
 
+  add_index "restaurant_tables", ["name"], name: "index_restaurant_tables_on_name"
+  add_index "restaurant_tables", ["venue_locu_id"], name: "index_restaurant_tables_on_venue_locu_id"
+
   create_table "table_items", force: true do |t|
     t.integer  "table_id"
     t.string   "item_name"
@@ -41,10 +44,15 @@ ActiveRecord::Schema.define(version: 20131006053825) do
     t.datetime "updated_at"
   end
 
+  add_index "table_items", ["item_name"], name: "index_table_items_on_item_name"
+  add_index "table_items", ["table_id"], name: "index_table_items_on_table_id"
+
   create_table "users", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "venmo_user_id"
   end
+
+  add_index "users", ["venmo_user_id"], name: "index_users_on_venmo_user_id"
 
 end
