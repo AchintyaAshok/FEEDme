@@ -42,6 +42,10 @@ ENDPOINTS
 ###Example
     POST http://localhost:3000/tableitems/quantity -d "{\"id\":\"1\",\"quantity\":\"1\"}"
 
+## Pay for items
+**POST** /tableitems/pay
+    {user_id : , items : [] }
+
 ## Delete an app
 **DELETE** /tableitems/:id
 
