@@ -13,7 +13,7 @@ jQuery ->
 		# of all events (without any filters) and the list of categories. 
 		initialize: ->
 			@currentView = null
-			window.App.vent.bind('get_menu', @menu_view)
+			#window.App.vent.bind('chosen_restaurant', @menu_view)
 
 		show_view:(newView) =>
 			if @currentView is not null then @currentView.close()
@@ -23,6 +23,8 @@ jQuery ->
 
 		home: ->
 			console.log 'in home!'
+			view = new MainView
+			@show_view(view)
 
 		table_view: ->
 			console.log 'in table view'
@@ -39,7 +41,7 @@ jQuery ->
 
 	class MainView extends Backbone.View
 
-		el: $('#container-main')
+		tagName:'div'
 
 		initialize: ->
 			console.log 'initializing main view'
@@ -52,14 +54,14 @@ jQuery ->
 		tagName: 'div'
 		className: 'table-view col-md-12 center'
 
-		initialize: ->
+		initialize:(options) ->
 			console.log 'initializing menu view'
 
 		render: ->
 			template = """
 			<div class="col-md-12 page-header">
 				<div>
-					<h1>Some Title <small>subtext about the title</small></h1>
+					<h1>Food <small>we all want some.</small></h1>
 				</div>
 			"""
 			$(@el).append(_.template(template))
@@ -69,18 +71,38 @@ jQuery ->
 			$(@el).append(@searchView.render().el)
 			$(@el).append("<div class='col-md-2 padding'></div>")
 
+			window.App.vent.bind('chosen_restaurant', @load_table_options)
+
 			return @
 
-		load_table_options: ->
+		load_table_options:(attributes) =>
+			@searchView.remove()
 			template = """
-				<div class='padding col-md-12'><br></div>
-				<div class='col-md-6'>
-					<a class='btn btn-primary btn-lg'>Create Table</a>
-				</div>
-				<div class='col-md-6'>
-					<a class='btn btn-primary btn-lg'>Join Table</a>
+				<div class="jumbotron" style='background-color:white;'>
+					<div class='row'>
+						<h2><%= name %></h2>
+					</div>
+					<div class='row'>
+						<p class='lead'>Create a new table OR Join friends at an existing table.</p>
+					</div>
+					<div class='col-md-6'><a class="btn btn-lg btn-success btn-block" id='create-table' href="#">Create Table</a></div>
+					<div class='col-md-6'><a class="btn btn-lg btn-primary btn-block" id='join-table' href="#">Join Table</a></div>
 				</div>
 			"""
+			$(@el).append(_.template(template, attributes))
+			return @
+
+		events:
+			'click #create-table': 'create_new_table'
+			'click #join-table': 'join_table'
+
+
+		create_new_table:(ev) =>
+			console.log 'create a new table'
+			
+
+		join_table:(ev) =>
+			console.log 'joining a table'
 
 		close: ->
 			console.log 'TableView::closing()'
@@ -137,10 +159,19 @@ jQuery ->
 			
 			$('form').remove()
 
-			if results.length == 0
+			if results.toJSON()['data']['venue']['objects'].length == 0
 				template = """
-
+					<div id='sorry'>
+						<p class='lead'>Oh No! We couldn't find anything :(</p>
+						<button class='btn btn-warning btn-lg btn-block' id='search-again'>Search Again</button>
+					</div>
 				"""
+				$(@el).append(_.template(template))
+
+				$('#search-again').on 'click', (ev)=>
+					$('#sorry').remove()
+					@render()
+
 				return @
 			
 
@@ -156,6 +187,7 @@ jQuery ->
 					    	<%= element['locality'] %>, <%= element['region'] %> <%= element['postal_code'] %><br>
 					    	<abbr P:</abbr> <%= element['phone'] %>
 					    </address>
+					    <input type='hidden' name='name' value="<%= element['name'] %>">
 					    <input type='hidden' name='id' value="<%= element['id'] %>">			
 					</li>
 				<% } %>
@@ -168,8 +200,13 @@ jQuery ->
 
 		choose_venue:(ev) ->
 			elem = $(ev.currentTarget)
-			id = $(ev.currentTarget).children('input').val()
-			window.App.vent.trigger('get_menu', id)
+			values = $(ev.currentTarget).children('input')
+			attributes = {}
+			$(ev.currentTarget).children('input').each (index, object)->
+				attributes[String(object.name)] = String(object.value)
+
+			console.log('our hidden inputs', attributes)
+			window.App.vent.trigger('chosen_restaurant', attributes)
 
 
 		handle_mouseover:(ev) ->
@@ -233,7 +270,7 @@ jQuery ->
 						%>
 						<% if (menuItem['type'] == 'SECTION_TEXT'){ %>
 						<div class=' well text-warning'><%= menuItem['text'] %></div>
-						<% } else{ %>
+						<% } else if(menuItem['price'] != undefined){ %>
 						<div class='list-group-item container'>
 							<div class='col-md-10'>
 								<p><%= menuItem['name'] %></p>
@@ -248,15 +285,6 @@ jQuery ->
 					</div>
 				</div>
 				<% } %>
-			"""
-
-			stuff = """
-			<ul class="nav nav-pills">
-				<% for(var j=0; j<element['contents'].length; j++){ %>
-				<p>blah</p>
-				<% } %>
-			</ul>
-				<li><%= element['contents'][i]['name'] %></li>
 			"""
 
 			$(@el).append(_.template(template, @model.toJSON()))
@@ -278,7 +306,6 @@ jQuery ->
 
 		initialize:(options) ->
 			@url = @url + '/' + options.id
-
 
 
 	# Exports
