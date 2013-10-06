@@ -2,7 +2,7 @@ class MenusController < ActionController::Base
 	respond_to :json
 
 	def index
-		venue_locu_id = 'b307b08674481c3cef22'
+		venue_locu_id = params[:id]
 		url = 'http://api.locu.com/v1_0/venue/' + venue_locu_id + '/?api_key=c441cb7b1b3f83a2644a6bc573dd8ebf3e9a1afb' 
 		menu = HTTParty.get(url)
 		#Get venue from frontend
