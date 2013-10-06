@@ -8,12 +8,15 @@ ENDPOINTS
 **GET** */venues/?name="seafood"*
 
 **GET** */tables/:venue_locu_id*
+### Show all tables for a venue
 
 **POST** */tables/*
 {"venue_locu_id" : "821y38912", "name" : "User1's table" }
-**POST** */tables/:id/user*
-{"user_id" : "1"}
+### Create a new table
 
+**POST** */tables/:id/user*
+{"user_id" : "1	"}
+### Add a user to a table
 
 # User workflow
 ## Version 1.0
