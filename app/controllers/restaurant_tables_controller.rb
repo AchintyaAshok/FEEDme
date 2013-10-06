@@ -4,7 +4,7 @@ class RestaurantTablesController < ApplicationController
 
 	def index
 		# Show a list of all tables for a venue
-		@tables = RestaurantTable.find_by_venue_locu_id(params[:venue_locu_id])
+		@tables = RestaurantTable.where(venue_locu_id: params[:venue_locu_id])
 		if @tables
 			render :status => 200,
 			:json => { :success => true,
