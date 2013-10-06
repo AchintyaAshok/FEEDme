@@ -13,6 +13,7 @@ jQuery ->
 		# of all events (without any filters) and the list of categories. 
 		initialize: ->
 			@currentView = null
+			window.App.vent.bind('get_menu', @menu_view)
 
 		show_view:(newView) =>
 			if @currentView is not null then @currentView.close()
@@ -28,10 +29,10 @@ jQuery ->
 			view = new TableView
 			@show_view(view)
 
-		menu_view:(options) ->
-			console.log('in select_items', options)
+		menu_view:(id) ->
+			console.log('get_menu', id)
 			menuView = new MenuView
-				options: options
+				id: id
 			@show_view(menuView)
 
 
@@ -63,8 +64,8 @@ jQuery ->
 			$(@el).append(_.template(template))
 
 			$(@el).append("<div class='col-md-2 padding'></div>")
-			searchElement = new RestaurantSearchView
-			$(@el).append(searchElement.render().el)
+			@searchView = new RestaurantSearchView
+			$(@el).append(@searchView.render().el)
 			$(@el).append("<div class='col-md-2 padding'></div>")
 
 			return @
@@ -82,6 +83,7 @@ jQuery ->
 
 		close: ->
 			console.log 'TableView::closing()'
+			@searchView.remove()
 			@remove()
 
 
@@ -99,10 +101,10 @@ jQuery ->
 
 		render: ->
 			template = """
-				<form role='form'>
+				<form role='form' id='restaurant-search-form'>
 					<div class='form-group'>
 						<input class="form-control input-lg" id='restaurant-search-query' type="text" placeholder="Enter a name of a restaurant. Eg. Olive Garden">
-						<button class='btn btn-info btn-lg btn-block' id='query-submit-button'>Find Places</button>
+						<button class='btn btn-info btn-lg btn-block' id='query-submit-button' type='submit'>Find Places</button>
 					</div>
 				</form>
 			"""
@@ -111,13 +113,23 @@ jQuery ->
 			return @
 
 		events:
-			'click #query-submit-button' : 'handle_submit'
+			'submit #restaurant-search-form' : 'handle_submit'
 			'mouseover .list-group-item' : 'handle_mouseover'
+			'click .list-group-item' : 'choose_venue'
 
-		handle_submit:(options) ->
-			console.log('submitted! options ->', options)
+		handle_submit:(ev) =>
+			ev.preventDefault()
+			serialized = $('#restaurant-search-form').serializeArray()
+			console.log('serialized, ->', serialized)
+			attributes = {}
+			$.each serialized, (index, object)->	# get the values from the form.. we have to do something roundabout to get the correct
+													# input name and input value so that we can set them as attributes for the model
+				attributes[String(object.name)] = String(object.value)
+
+			console.log('serialized form', attributes)
+
 			results = new Venue
-				options: options
+				options: attributes
 			results.fetch
 				async: false
 				success:()=>
@@ -135,14 +147,14 @@ jQuery ->
 				<% for(var i=0; i < data['venue']['objects'].length; i++) { 
 					var element = data['venue']['objects'][i];
 				%>
-				
 					<li class="list-group-item col-md-12">			
 					    <p class='lead'><%= element['name'] %></p>
 					    <address>
 					    	<%= element['street_address'] %><br>
 					    	<%= element['locality'] %>, <%= element['region'] %> <%= element['postal_code'] %><br>
 					    	<abbr P:</abbr> <%= element['phone'] %>
-					    </address>			
+					    </address>
+					    <input type='hidden' name='id' value="<%= element['id'] %>">			
 					</li>
 				<% } %>
 				</div>
@@ -150,6 +162,13 @@ jQuery ->
 
 			$(@el).append(_.template(template, results.toJSON()))
 			return @
+
+
+		choose_venue:(ev) ->
+			console.log('chose venue -> ', ev.currentTarget)
+			elem = $(ev.currentTarget)
+			id = '1111'
+			window.App.vent.trigger('get_menu', id)
 
 
 		handle_mouseover:(ev) ->
@@ -180,12 +199,12 @@ jQuery ->
 		className: 'container col-md-12'
 		idName: 'menu-view'
 
-		initialize:(options) ->
+		initialize:(id) ->
 			console.log 'initializing menu view'
-			console.log('loading with options->', options)
+			console.log('loading with id->', id)
 
 			@model = new Menu
-				id: options.id # pass in the id of the restaurant to retrieve its menu
+				id: id # pass in the id of the restaurant to retrieve its menu
 			@model.fetch
 				async: false
 				success:(ev) =>
@@ -248,7 +267,7 @@ jQuery ->
 
 	class Menu extends Backbone.Model
 
-		url: '/menu'
+		url: '/menus'
 
 
 	# Exports
