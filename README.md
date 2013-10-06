@@ -7,6 +7,13 @@ ENDPOINTS
 
 **GET** */venues/?name="seafood"*
 
+**GET** */tables/:venue_locu_id*
+
+**POST** */tables/*
+{"venue_locu_id" : "821y38912", "name" : "User1's table" }
+**POST** */tables/:id/user*
+{"user_id" : "1"}
+
 
 # User workflow
 ## Version 1.0
