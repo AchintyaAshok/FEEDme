@@ -1,6 +1,5 @@
 class RestaurantTablesController < ApplicationController
-	skip_before_filter :verify_authenticity_token,
-	:if => Proc.new { |c| c.request.format == 'application/json' }
+	skip_before_filter :verify_authenticity_token, only: :create	
 	respond_to :json
 
 	def index
@@ -13,6 +12,11 @@ class RestaurantTablesController < ApplicationController
 				:data => { :tables => @tables
 				} 
 			} 
+		else
+			render :status => :unprocessable_entity,
+             :json => { :success => false,
+                        :info => "No tables for venue_locu_id: #{params[:venue_locu_id]}",
+                        :data => {} }
 		end
 	end
 
