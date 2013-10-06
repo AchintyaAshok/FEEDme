@@ -27,7 +27,7 @@ jQuery ->
 			'click #venmo-login-button': 'login_venmo'
 
 		login_venmo: =>
-			console.log('in login_venmo')
+			console.log 'in login_venmo'
 			window.location.href = @endpointURL
 			window.location.reload()
 

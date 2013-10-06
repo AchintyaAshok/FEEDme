@@ -1,6 +1,38 @@
 jQuery ->
 
 
+	class User extends Backbone.Model
+		initialize: ->
+			console.log 'initialized user'
+			@attributes = {
+				'client_id': 1437
+				'scope': 'access_profile,make_payments'
+				'response_type': 'code'
+			}
+			endpointURL = @generate_endpoint_url(@attributes)
+			#console.log 'endpoint url->', endpointURL
+
+		generate_endpoint_url: ->
+			@endpointURL = "https://api.venmo.com/oauth/authorize"
+			console.log 'generate_e_url::attr->', @attributes
+			prefix = "?"
+			$.each @attributes, (key, value)=>
+				#console.log 'key,value', key, value
+				@endpointURL = @endpointURL + prefix + key + "=" + value
+				prefix = "&"
+				#console.log 'updated url->', @endpointURL
+			
+			return @endpointURL
+
+		events:
+			'click #venmo-login-button': 'login_venmo'
+
+		login_venmo: =>
+			console.log 'in login_venmo'
+			window.location.href = @endpointURL
+			window.location.reload()
+
+
 	class AppRouter extends Backbone.Router
 
 		routes:
@@ -13,7 +45,8 @@ jQuery ->
 		# of all events (without any filters) and the list of categories. 
 		initialize: ->
 			@currentView = null
-			#window.App.vent.bind('chosen_restaurant', @menu_view)
+			window.App.VenmoUser = new User
+			
 
 		show_view:(newView) =>
 			if @currentView is not null then @currentView.close()
@@ -51,11 +84,11 @@ jQuery ->
 				<div class="jumbotron">
 					<h1>Welcome to Feed Me!</h1>
 					<p class="lead">Here, you can easily find your favorite restaurants, look up the menus, select your food and share the bill with friends!</p>
-					<p><a class="btn btn-lg btn-info" id='venmo-login-button'>Login with Venmo</a></p>
+					<p><a class="btn btn-lg btn-info" id='venmo-login-button' href="<%= venmo_login %>">Login with Venmo</a></p>
 				</div>
 			"""
 
-			$(@el).html(_.template(template))
+			$(@el).html(_.template(template, {'venmo_login': window.App.VenmoUser.generate_endpoint_url()}))
 			return @
 
 		close: ->
@@ -85,6 +118,7 @@ jQuery ->
 				<div>
 					<h1>Food <small>we all want some.</small></h1>
 				</div>
+			</div>
 			"""
 			$(@el).append(_.template(template))
 
@@ -369,3 +403,4 @@ jQuery ->
 	window.App =
 		"AppRouter": AppRouter
 		"vent": _.extend({}, Backbone.Events)
+		'VenmoUser': User
