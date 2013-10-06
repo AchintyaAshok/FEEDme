@@ -77,7 +77,7 @@ class TableItemsController < ActionController::Base
 			render :status => 200,
 			:json => { :success => true,
 				:info => "Paid",
-				:data => {item:} 
+				:data => {} 
 			} 
 		else
 			render :status => :unprocessable_entity,
