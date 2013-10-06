@@ -55,6 +55,22 @@ jQuery ->
 
 		render: ->
 			template = """
+			<div class="col-md-12 page-header">
+				<div>
+					<h1>Some Title <small>subtext about the title</small></h1>
+				</div>
+			"""
+			$(@el).append(_.template(template))
+
+			$(@el).append("<div class='col-md-2 padding'></div>")
+			searchElement = new RestaurantSearchView
+			$(@el).append(searchElement.render().el)
+			$(@el).append("<div class='col-md-2 padding'></div>")
+
+			return @
+
+		load_table_options: ->
+			template = """
 				<div class='padding col-md-12'><br></div>
 				<div class='col-md-6'>
 					<a class='btn btn-primary btn-lg'>Create Table</a>
@@ -64,12 +80,97 @@ jQuery ->
 				</div>
 			"""
 
-			$(@el).append(_.template(template))
-			return @
-
 		close: ->
 			console.log 'TableView::closing()'
 			@remove()
+
+
+	# This view presents the user with a search bar which allows them to 
+	# find restaurants by name. Consequently, once a search is performed, 
+	# the view loads all the options of restaurants that they can choose from.
+	class RestaurantSearchView extends Backbone.View
+
+		tagName: 'div'
+		className: 'col-md-8'
+		idName: 'restaurant-search-view'
+
+		initialize: ->
+			console.log 'initializing RestaurantSearchView'
+
+		render: ->
+			template = """
+				<form role='form'>
+					<div class='form-group'>
+						<input class="form-control input-lg" id='restaurant-search-query' type="text" placeholder="Enter a name of a restaurant. Eg. Olive Garden">
+						<button class='btn btn-info btn-lg btn-block' id='query-submit-button'>Find Places</button>
+					</div>
+				</form>
+			"""
+
+			$(@el).html(_.template(template))
+			return @
+
+		events:
+			'click #query-submit-button' : 'handle_submit'
+			'mouseover .list-group-item' : 'handle_mouseover'
+
+		handle_submit:(options) ->
+			console.log('submitted! options ->', options)
+			results = new Venue
+				options: options
+			results.fetch
+				async: false
+				success:()=>
+					@render_results(results)
+				error:(response)=>
+					console.log('restaurant-search-error -> ', response)
+
+
+		render_results:(results) ->
+			console.log 'these are the returned results ->', results.toJSON()
+			$('form').remove()
+
+			template = """
+				<div class="col-md-12 list-group pull-left">
+				<% for(var i=0; i < data['venue']['objects'].length; i++) { 
+					var element = data['venue']['objects'][i];
+				%>
+				
+					<li class="list-group-item col-md-12">			
+					    <p class='lead'><%= element['name'] %></p>
+					    <address>
+					    	<%= element['street_address'] %><br>
+					    	<%= element['locality'] %>, <%= element['region'] %> <%= element['postal_code'] %><br>
+					    	<abbr P:</abbr> <%= element['phone'] %>
+					    </address>			
+					</li>
+				<% } %>
+				</div>
+			"""
+
+			$(@el).append(_.template(template, results.toJSON()))
+			return @
+
+
+		handle_mouseover:(ev) ->
+			$('.list-group-item').removeClass('active')
+			$(ev.currentTarget).addClass('active')
+			$(ev.currentTarget).on 'mouseleave', (ev)->
+				$(this).removeClass('active')
+
+
+
+	class Venue extends Backbone.Model
+
+		url: '/venues'
+
+		initialize:(options) ->
+			if options.name? then @modify_url(options.name)
+
+
+		modify_url:(name) ->
+			@url = @url + "?name=" + encodeURIComponent(name)
+			return @url
 
 
 	# This view shows user the entire menu pertaining to the restaurant.
@@ -84,6 +185,7 @@ jQuery ->
 			console.log('loading with options->', options)
 
 			@model = new Menu
+				id: options.id # pass in the id of the restaurant to retrieve its menu
 			@model.fetch
 				async: false
 				success:(ev) =>
