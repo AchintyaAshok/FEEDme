@@ -44,7 +44,7 @@ ENDPOINTS
 
 ## Pay for items
 **POST** /tableitems/pay
-    {user_id : , items : [] }
+    {user_id : , items : [Array of table_item ids] }
 
 ## Delete an app
 **DELETE** /tableitems/:id
