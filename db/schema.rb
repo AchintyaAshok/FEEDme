@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131006003528) do
+ActiveRecord::Schema.define(version: 20131006030313) do
 
   create_table "restaurant_table_users", force: true do |t|
     t.integer  "user_id"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20131006003528) do
   create_table "users", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "venmo_user_id"
   end
 
 end
