@@ -40,8 +40,11 @@ gem 'json'
 gem 'annotate'
 gem 'newrelic_rpm'
 
+
 group :production do
 	gem 'pg'
+	gem 'rails_serve_static_assets'
+
 end
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
