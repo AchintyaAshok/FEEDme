@@ -73,6 +73,7 @@ jQuery ->
 
 		table_view: =>
 			console.log 'in table view'
+			@navigate('makeMyTable')
 			view = new TableView
 			@show_view(view)
 
@@ -220,10 +221,9 @@ jQuery ->
 				userID = window.App.VenmoUser.get('user')['id']
 				$.post '/tables', {'name': newTableName, 'venue_locu_id':@venueID, 'user_id':userID}, (data, response)=>
 					console.log('success!', data, response)
-
-
-				$('form').remove()
-				@load_menu()
+					@attributes = data['data']['table']
+					$('form').remove()
+					@load_menu()
 
 
 			return @
@@ -233,10 +233,17 @@ jQuery ->
 			console.log 'joining a table'
 
 		load_menu: ->
+			console.log 'table-view table model -> ', @attributes
 			@menu = new MenuView
 				id: @venueID
 			$(@el).append(@menu.render().el)
+			window.App.vent.bind('add-item', @add_item)
 			return @
+
+		add_item:(attributes) =>
+			console.log 'item attributes -> ', attributes
+			$.post '/tableitems', {'table_item': {'table_id':@attributes.id, 'item_name':attributes.name, 'quantity':1, 'price':attributes.price}}, (data, response)=>
+				console.log 'adding item post->', response, data
 
 
 		close: ->
@@ -340,7 +347,6 @@ jQuery ->
 			$(ev.currentTarget).children('input').each (index, object)->
 				attributes[String(object.name)] = String(object.value)
 
-			console.log('our hidden inputs', attributes)
 			window.App.vent.trigger('chosen_restaurant', attributes)
 
 
@@ -383,6 +389,7 @@ jQuery ->
 
 		events:
 			'mouseover .list-group-item' : 'handle_mouseover'
+			'click #add-item-button': 'add_item'
 
 		render: ->
 			console.log('MenuView::render -> model', @model.toJSON())
@@ -408,6 +415,9 @@ jQuery ->
 							</div>
 							<div class='col-md-2' style='text-align:right;'>
 								<p><%= menuItem['price'] %></p>
+								<button class='btn btn-sm btn-success' id='add-item-button'>Add Item</button>
+								<input type='hidden' class='item-info' name='name' value="<%= menuItem['name'] %>">
+								<input type='hidden' class='item-info' name='price' value="<%= menuItem['price'] %>">
 							</div>
 						<% } %>
 						</div>
@@ -425,6 +435,15 @@ jQuery ->
 			$(ev.currentTarget).addClass('active')
 			$(ev.currentTarget).on 'mouseleave', (ev)->
 				$(this).removeClass('active')
+
+		add_item:(ev) =>
+			console.log("menu-view::add_item current target", $(ev.currentTarget).parent())
+			attributes = {}
+			$(ev.currentTarget).parent().children('.item-info').each (index, object)->
+				attributes[String(object.name)] = String(object.value)
+			$(ev.currentTarget).remove()
+			$(ev.currentTarget).parent().addClass('success')
+			window.App.vent.trigger('add-item', attributes)
 
 		close: ->
 			@remove()
