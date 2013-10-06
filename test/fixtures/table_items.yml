@@ -1,0 +1,32 @@
+# == Schema Information
+#
+# Table name: table_items
+#
+#  id             :integer          not null, primary key
+#  table_id       :integer
+#  item_name      :string(255)
+#  quantity       :integer
+#  price          :float
+#  paid           :boolean
+#  paying_user_id :integer
+#  created_at     :datetime
+#  updated_at     :datetime
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  table_id: 1
+  item_name: MyString
+  quantity: 1
+  price: 
+  paid: false
+  paying_user_id: 1
+
+two:
+  table_id: 1
+  item_name: MyString
+  quantity: 1
+  price: 
+  paid: false
+  paying_user_id: 1
