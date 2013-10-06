@@ -1,10 +1,10 @@
 class RestaurantTablesController < ApplicationController
-	skip_before_filter :verify_authenticity_token, only: :create	
+	skip_before_filter :verify_authenticity_token, only: [:create, :update]
 	respond_to :json
 
 	def index
 		# Show a list of all tables for a venue
-		@tables = RestaurantTable.find_by_venue_locu_id(params[:venue_locu_id])
+		@tables = RestaurantTable.where(venue_locu_id: params[:venue_locu_id])
 		if @tables
 			render :status => 200,
 			:json => { :success => true,
@@ -23,7 +23,10 @@ class RestaurantTablesController < ApplicationController
 	def create
 		#Create a table. Still needs a venue_id + a name
 		@table = RestaurantTable.create!(venue_locu_id: params[:venue_locu_id], name: params[:name])
-		@user = User.find(params[:user_id])
+		@user = User.find_by_venmo_user_id(params[:user_id])
+		if @user == nil
+			@user = User.create!(venmo_user_id: params[:user_id])
+		end
 		if @table && @user
 			@table.users << @user
 			render :status => 200,
@@ -37,7 +40,10 @@ class RestaurantTablesController < ApplicationController
 
 	def update
 		@table = RestaurantTable.find(params[:id])
-		@user = User.find(params[:user_id])
+		@user = User.find_by_venmo_user_id(params[:user_id])
+		if @user == nil
+			@user = User.create!(venmo_user_id: params[:user_id])
+		end
 		@table.users << @user
 		#HACK FIX THIS ASAP
 		render :status => 200,

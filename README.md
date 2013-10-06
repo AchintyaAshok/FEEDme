@@ -44,5 +44,9 @@ Web API key: c441cb7b1b3f83a2644a6bc573dd8ebf3e9a1afb
 
 iOS Client API Key: 5b8f8851e556f62af88df2235eeefcba3ba6d236
 
+iOS Client Venmo Secret: GtxKdnaEQGKGdzJDvJCB9sNNs9MFju9h
+
+iOS Client Venmo ID: 1428
+
 Heroku App name:
 http://secret-basin-8689.herokuapp.com/
