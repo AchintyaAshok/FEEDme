@@ -34,6 +34,7 @@ end
 
 gem 'httparty'
 gem 'json'
+gem 'annotate'
 
 group :production do
 	gem 'pg'

@@ -5,3 +5,5 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+	user1 = User.create();
+	table1 = RestaurantTable.create(venue_locu_id: "b307b08674481c3cef22", name: "user1's table"); 
