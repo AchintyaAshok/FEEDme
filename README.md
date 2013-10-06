@@ -9,6 +9,9 @@ ENDPOINTS
 ## Search for a venue
 **GET** */venues/?name="seafood"*
 
+## Get Venmo Id for a venue
+**GET** */venues/:id/venmo*
+
 ## Show all tables for a venue
 **GET** */tables/:venue_locu_id*
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131006075324) do
+ActiveRecord::Schema.define(version: 20131006101457) do
 
   create_table "restaurant_table_users", force: true do |t|
     t.integer  "user_id"
@@ -54,5 +54,12 @@ ActiveRecord::Schema.define(version: 20131006075324) do
   end
 
   add_index "users", ["venmo_user_id"], name: "index_users_on_venmo_user_id"
+
+  create_table "venues", force: true do |t|
+    t.string   "venue_locu_id"
+    t.string   "venmo_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

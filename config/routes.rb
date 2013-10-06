@@ -9,6 +9,7 @@ Planmyweather::Application.routes.draw do
   get 'menus/:id' => 'menus#index'
   
   get 'venues' => 'venues#index'
+  get 'venues/:id/venmo' => 'venues#getUserVenmo'
 
   get 'tables/:venue_locu_id' => 'restaurant_tables#index'
   post 'tables' => 'restaurant_tables#create'
@@ -19,6 +20,7 @@ Planmyweather::Application.routes.draw do
   post 'tableitems/quantity' => 'table_items#update_quantity'
   post 'tableitems/pay' => 'table_items#update_payments'
   delete 'tableitems/:id' => 'table_items#destroy'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
