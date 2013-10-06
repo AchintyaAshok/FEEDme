@@ -5,7 +5,7 @@ Planmyweather::Application.routes.draw do
 
 
   get '/home/index'
-  get 'menus' => 'menus#index'
+  get 'menus/:id' => 'menus#index'
   get 'venues' => 'venues#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
