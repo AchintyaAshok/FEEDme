@@ -38,6 +38,7 @@ end
 gem 'httparty'
 gem 'json'
 gem 'annotate'
+gem 'newrelic_rpm'
 
 group :production do
 	gem 'pg'
