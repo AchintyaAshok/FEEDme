@@ -13,7 +13,7 @@ class MenusController < ActionController::Base
 					render :status => 200,
 					:json => { :success => true,
 						:info => "",
-						:data => { :menu => menu_json["objects"][0]["menus"][0]
+						:data => { :menu => menu_json["objects"][0]["menus"]
 						 } 
 					} 
 		end
