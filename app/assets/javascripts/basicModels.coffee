@@ -24,13 +24,24 @@ jQuery ->
 			
 			return @endpointURL
 
-		events:
-			'click #venmo-login-button': 'login_venmo'
+		complete_authorization:(code) ->
+			console.log 'completing authorization...', code
+			@accessURL = "https://api.venmo.com/oauth/access_token"
+			@accessAttrs = {
+				'client_id': 1437
+				'code': code
+				'client_secret': 'a6fNZeFvmMRWevAsQNScRcwFu6Rut6zA'
+			}
+			# prefix = '?'
+			# $.each @accessAttrs, (key, value)=>
+			# 	@accessURL += prefix + key + "=" + value
+			# 	prefix = "&"
 
-		login_venmo: =>
-			console.log 'in login_venmo'
-			window.location.href = @endpointURL
-			window.location.reload()
+			$.post @accessURL, @accessAttrs, (data, status)=>
+				console.log('success!', data, status)
+				@set data
+				window.App.vent.trigger('user-loaded', @toJSON())
+
 
 
 	class AppRouter extends Backbone.Router
@@ -46,7 +57,8 @@ jQuery ->
 		initialize: ->
 			@currentView = null
 			window.App.VenmoUser = new User
-			
+			window.App.vent.bind('table-selection', @table_view)
+
 
 		show_view:(newView) =>
 			if @currentView is not null then @currentView.close()
@@ -59,7 +71,7 @@ jQuery ->
 			view = new MainView
 			@show_view(view)
 
-		table_view: ->
+		table_view: =>
 			console.log 'in table view'
 			view = new TableView
 			@show_view(view)
@@ -77,7 +89,16 @@ jQuery ->
 		tagName:'div'
 
 		initialize: ->
-			console.log 'initializing main view'
+			params = {}
+			window.location.search.replace /[?&]+([^=&]+)=([^&]*)/gi, (str,key,value)=>
+				params[key] = value
+
+			console.log 'code->', params
+			if params.code?
+				alert(params.code)
+				window.App.VenmoUser.complete_authorization(params.code)
+
+			window.App.vent.bind('user-loaded', @update_view)
 
 		render: ->
 			template = """
@@ -90,6 +111,22 @@ jQuery ->
 
 			$(@el).html(_.template(template, {'venmo_login': window.App.VenmoUser.generate_endpoint_url()}))
 			return @
+
+		update_view:(userData)=>
+			$('jumbotron').remove()
+
+			template = """
+				<div class="jumbotron">
+					<h1>Welcome, <%= firstname %>!</h1>
+					<p class="lead">Here, you can easily find your favorite restaurants, look up the menus, select your food and share the bill with friends!</p>
+					<p><a class="btn btn-lg btn-success" id='restaurant-search-button'>Search for Food</a></p>
+				</div>
+			"""
+
+			$(@el).html(_.template(template, userData['user']))
+
+			$('#restaurant-search-button').on 'click', (ev)=>
+				window.App.vent.trigger('table-selection')
 
 		close: ->
 			@remove()
@@ -168,7 +205,7 @@ jQuery ->
 					<div class='col-md-2 padding'></div>
 					<div class='form-group col-md-8'>
 						<input class="form-control input-lg" id='new-table-name' type="text" placeholder="Name your table. Eg. John's Table">
-						<button class='btn btn-success btn-lg btn-block' id='create-new-table' type='submit'>Submit</button>
+						<button class='btn btn-success btn-lg btn-block' id='create-new-table'>Submit</button>
 					</div>
 					<div class='col-md-2 padding'></div>
 				</form>
@@ -176,9 +213,15 @@ jQuery ->
 
 			$(@el).append(_.template(template))
 
-			$('#create-new-table').on 'click', =>
+			$('#create-new-table').on 'click', (ev)=>
+				ev.preventDefault()
 				newTableName = $('#new-table-name').val()
 				console.log 'create the new table with name->', newTableName
+				userID = window.App.VenmoUser.get('user')['id']
+				$.post '/tables', {'name': newTableName, 'venue_locu_id':@venueID, 'user_id':userID}, (data, response)=>
+					console.log('success!', data, response)
+
+
 				$('form').remove()
 				@load_menu()
 
@@ -330,17 +373,13 @@ jQuery ->
 		idName: 'menu-view'
 
 		initialize:(options) ->
-			console.log 'initializing menu view'
-			console.log('loading with id->', options.id)
-
 			@model = new Menu
 				id: options.id # pass in the id of the restaurant to retrieve its menu
 			@model.fetch
 				async: false
 				success:(ev) =>
-					console.log 'fetched menu!'
-				error:(ev) =>
-					console.log 'unable to fetch menu'
+				error:(response) =>
+					console.log 'unable to fetch menu -> ', response
 
 		events:
 			'mouseover .list-group-item' : 'handle_mouseover'
