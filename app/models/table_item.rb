@@ -14,5 +14,5 @@
 #
 
 class TableItem < ActiveRecord::Base
-	belongs_to :table, foreign_key: :table_id
+	belongs_to :restaurant_table, foreign_key: :table_id
 end

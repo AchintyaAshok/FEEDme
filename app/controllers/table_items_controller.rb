@@ -59,6 +59,34 @@ class TableItemsController < ActionController::Base
 		end
 	end
 
+	def update_payments
+		flag = true
+		@problem_items = Array.new
+		params["items"].each do |i|
+			item = TableItem.find(i)
+			if item != nil
+				item.paid = true
+				item.paying_user_id = params["user_id"] #User id is venmo user id
+			else
+				flag = false
+				@problem_items.push(i)
+			end
+
+		end
+		if flag
+			render :status => 200,
+			:json => { :success => true,
+				:info => "Paid",
+				:data => {} 
+			} 
+		else
+			render :status => :unprocessable_entity,
+			:json => { :success => false,
+				:info => "Problems with " + @problem_items,
+				:data => {} 
+			}
+		end
+	end
 	def destroy
 		@table_item = TableItem.find(params[:id])
 		if @table_item.destroy

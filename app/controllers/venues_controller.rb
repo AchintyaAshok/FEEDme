@@ -14,4 +14,19 @@ class VenuesController < ActionController::Base
 			} 
 		end
 	end
+
+	def getUserVenmo
+		@venue = Venue.find_by_venue_locu_id(params[:id])
+
+		if @venue
+			render :status => 200,
+			:json => { :success => true,
+				:info => "",
+				:data => { :venue => @venue
+				} 
+			} 
+
+		end 
+	end
+
 end

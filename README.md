@@ -9,6 +9,9 @@ ENDPOINTS
 ## Search for a venue
 **GET** */venues/?name="seafood"*
 
+## Get Venmo Id for a venue
+**GET** */venues/:id/venmo*
+
 ## Show all tables for a venue
 **GET** */tables/:venue_locu_id*
 
@@ -41,6 +44,10 @@ ENDPOINTS
     {id: , quantity: }
 ###Example
     POST http://localhost:3000/tableitems/quantity -d "{\"id\":\"1\",\"quantity\":\"1\"}"
+
+## Pay for items
+**POST** /tableitems/pay
+    {user_id : , items : [Array of table_item ids] }
 
 ## Delete an app
 **DELETE** /tableitems/:id
