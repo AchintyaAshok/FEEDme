@@ -128,8 +128,12 @@ jQuery ->
 
 			console.log('serialized form', attributes)
 
+			options = {}
+			options.name = $('#restaurant-search-query').val()
+			console.log('options.name', options)
+
 			results = new Venue
-				options: attributes
+				options: {'name':$('#restaurant-search-query').val()}
 			results.fetch
 				async: false
 				success:()=>
@@ -140,6 +144,7 @@ jQuery ->
 
 		render_results:(results) ->
 			console.log 'these are the returned results ->', results.toJSON()
+			
 			$('form').remove()
 
 			template = """
@@ -167,6 +172,8 @@ jQuery ->
 		choose_venue:(ev) ->
 			console.log('chose venue -> ', ev.currentTarget)
 			elem = $(ev.currentTarget)
+			id = $(ev.currentTarget).children('input').text()
+			console.log('attempting to get id->', id)
 			id = '1111'
 			window.App.vent.trigger('get_menu', id)
 
@@ -184,7 +191,8 @@ jQuery ->
 		url: '/venues'
 
 		initialize:(options) ->
-			if options.name? then @modify_url(options.name)
+			console.log('initializing a venue, options->', options)
+			if options? and options.name? then @modify_url(options.name)
 
 
 		modify_url:(name) ->
