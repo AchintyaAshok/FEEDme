@@ -13,6 +13,11 @@ class RestaurantTablesController < ApplicationController
 				:data => { :tables => @tables
 				} 
 			} 
+		else
+			render :status => :unprocessable_entity,
+             :json => { :success => false,
+                        :info => "No tables for venue_locu_id: #{params[:venue_locu_id]}",
+                        :data => {} }
 		end
 	end
 
