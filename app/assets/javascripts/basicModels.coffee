@@ -18,7 +18,7 @@ jQuery ->
 		show_view:(newView) =>
 			if @currentView is not null then @currentView.close()
 			@currentView = newView
-			$('#container-main').append(@currentView.render().el)
+			$('#container-main').html(@currentView.render().el)
 
 
 		home: ->
@@ -29,10 +29,11 @@ jQuery ->
 			view = new TableView
 			@show_view(view)
 
-		menu_view:(id) ->
+		menu_view:(id) =>
 			console.log('get_menu', id)
 			menuView = new MenuView
 				id: id
+			@navigate('select_items/' + id)
 			@show_view(menuView)
 
 
@@ -119,18 +120,8 @@ jQuery ->
 
 		handle_submit:(ev) =>
 			ev.preventDefault()
-			serialized = $('#restaurant-search-form').serializeArray()
-			console.log('serialized, ->', serialized)
-			attributes = {}
-			$.each serialized, (index, object)->	# get the values from the form.. we have to do something roundabout to get the correct
-													# input name and input value so that we can set them as attributes for the model
-				attributes[String(object.name)] = String(object.value)
 
-			console.log('serialized form', attributes)
-
-			options = {}
 			name = $('#restaurant-search-query').val()
-
 			results = new Venue
 				name: name
 			results.fetch
@@ -145,6 +136,13 @@ jQuery ->
 			console.log 'these are the returned results ->', results.toJSON()
 			
 			$('form').remove()
+
+			if results.length == 0
+				template = """
+
+				"""
+				return @
+			
 
 			template = """
 				<div class="col-md-12 list-group pull-left">
@@ -169,11 +167,8 @@ jQuery ->
 
 
 		choose_venue:(ev) ->
-			console.log('chose venue -> ', ev.currentTarget)
 			elem = $(ev.currentTarget)
-			id = $(ev.currentTarget).children('input').text()
-			console.log('attempting to get id->', id)
-			id = '1111'
+			id = $(ev.currentTarget).children('input').val()
 			window.App.vent.trigger('get_menu', id)
 
 
@@ -193,7 +188,6 @@ jQuery ->
 			console.log('initializing a venue, options->', options)
 			if options? and options.name? then @modify_url(options.name)
 
-
 		modify_url:(name) ->
 			@url = @url + "?name=" + encodeURIComponent(name)
 			console.log('modifying venue url -> ', @url)
@@ -207,12 +201,12 @@ jQuery ->
 		className: 'container col-md-12'
 		idName: 'menu-view'
 
-		initialize:(id) ->
+		initialize:(options) ->
 			console.log 'initializing menu view'
-			console.log('loading with id->', id)
+			console.log('loading with id->', options.id)
 
 			@model = new Menu
-				id: id # pass in the id of the restaurant to retrieve its menu
+				id: options.id # pass in the id of the restaurant to retrieve its menu
 			@model.fetch
 				async: false
 				success:(ev) =>
@@ -226,27 +220,32 @@ jQuery ->
 		render: ->
 			console.log('MenuView::render -> model', @model.toJSON())
 			template = """
-				<% for(var i=0; i<data['menu']['sections'].length; i++) { 
-					var element = data['menu']['sections'][i];
+				<% for(var i=0; i<data['menu'][0]['sections'].length; i++) { 
+					var element = data['menu'][0]['sections'][i];
 				%>
 				<div class='panel panel-default'>
 					<div class='panel-heading clearfix'>
 						<h3 class='panel-title'><%= element['section_name'] %></h3>
 					</div>
-					<ul class="list-group">
+					<div class="list-group">
 						<% for(var j=0; j<element['subsections'][0]['contents'].length; j++){ 
 							var menuItem = element['subsections'][0]['contents'][j];
 						%>
 						<% if (menuItem['type'] == 'SECTION_TEXT'){ %>
 						<div class=' well text-warning'><%= menuItem['text'] %></div>
 						<% } else{ %>
-						<li class='list-group-item'>
-							<a><%= menuItem['name'] %></a>
-							<p class='text-muted'><%= menuItem['description'] %></p>
-							<% } %>
-						</li>
+						<div class='list-group-item container'>
+							<div class='col-md-10'>
+								<p><%= menuItem['name'] %></p>
+								<p class='text-muted'><%= menuItem['description'] %></p>
+							</div>
+							<div class='col-md-2 pull-right'>
+								<p><%= menuItem['price'] %></p>
+							</div>
 						<% } %>
-					</ul>
+						</div>
+						<% } %>
+					</div>
 				</div>
 				<% } %>
 			"""
@@ -257,7 +256,7 @@ jQuery ->
 				<p>blah</p>
 				<% } %>
 			</ul>
-				<li><a><%= element['contents'][i]['name']</a></li>
+				<li><%= element['contents'][i]['name'] %></li>
 			"""
 
 			$(@el).append(_.template(template, @model.toJSON()))
@@ -276,6 +275,10 @@ jQuery ->
 	class Menu extends Backbone.Model
 
 		url: '/menus'
+
+		initialize:(options) ->
+			@url = @url + '/' + options.id
+
 
 
 	# Exports
