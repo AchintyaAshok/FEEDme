@@ -7,7 +7,9 @@ Planmyweather::Application.routes.draw do
   get '/home/index'
   get 'menus/:id' => 'menus#index'
   get 'venues' => 'venues#index'
-
+  get 'tables' => 'restaurant_tables#index'
+  post 'tables' => 'restaurant_tables#create'
+  post 'tables/:id/users' => 'restaurant_tables#update'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

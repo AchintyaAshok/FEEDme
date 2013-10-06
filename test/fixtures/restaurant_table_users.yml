@@ -1,0 +1,20 @@
+# == Schema Information
+#
+# Table name: restaurant_table_users
+#
+#  id                  :integer          not null, primary key
+#  user_id             :integer
+#  restaurant_table_id :integer
+#  created_at          :datetime
+#  updated_at          :datetime
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user: 
+  restaurant_table_id: 
+
+two:
+  user: 
+  restaurant_table_id: 
