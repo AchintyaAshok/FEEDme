@@ -71,15 +71,3 @@ should not have.
 ## Version 2.0
  5. Users can select menu items and opt to pay for them
  6. Users can customize the location where they are looking for restaurants.
-
-# API Keys
-Web API key: c441cb7b1b3f83a2644a6bc573dd8ebf3e9a1afb
-
-iOS Client API Key: 5b8f8851e556f62af88df2235eeefcba3ba6d236
-
-iOS Client Venmo Secret: GtxKdnaEQGKGdzJDvJCB9sNNs9MFju9h
-
-iOS Client Venmo ID: 1428
-
-Heroku App name:
-http://secret-basin-8689.herokuapp.com/
